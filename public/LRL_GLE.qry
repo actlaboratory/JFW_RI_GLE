@@ -1,0 +1,27 @@
+(:------------------ NAMESPACES ------------------:)
+(: declare default element namespace "http://www.w3.org/1999/xhtml"; :)
+declare namespace h = "http://www.w3.org/1999/xhtml";
+
+(:------------------ IMPORTS ------------------:)
+import module namespace fsi = "http://freedomscientific.com/ResearchItImports" at "ResearchItLibrary.jri";
+
+(: Output text value of given nodes, without trailing newline :)
+declare function local:extract-text($lines as node()*) as xs:string*
+{
+   for $line in $lines
+   return (normalize-space(data($line)))
+};
+
+declare variable $search-string := encode-for-uri ("|ARG_1...ARG_n|");
+declare variable $base := "http://www.google.co.jp/search?lr=ja&amp;oe=UTF-8&amp;num=50&amp;q=";
+declare variable $base_host := "http://www.google.co.jp";
+declare variable $url := concat($base, $search-string);
+declare variable $url-html := unparsed-text($url, "UTF-8");
+declare variable $g_doc := xqilla:parse-html($url-html);
+declare variable $search-results := $g_doc/html/body//a[.//h3 and starts-with(./@href, "/url")];
+declare variable $links := for $x in $search-results
+  return ('<a href=&quot;', concat($base_host, data($x/@href)), '&quot; target="_blank">', local:extract-text($x//h3), '</a>', $fsi:new_line);
+declare variable $result_page_link := ('<a href=&quot;', $url, '&quot; target="_blank">Ç∑Ç◊ÇƒÇÃåüçıåãâ ', '</a>', $fsi:new_line);
+if ($links != '') then ($links, $fsi:new_line, $result_page_link) else ()
+
+
