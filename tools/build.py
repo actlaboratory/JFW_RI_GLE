@@ -6,6 +6,10 @@
 # Copyright (C) 2021 Hiroki Fujii <hfujii@hisystron.com>
 
 # constantsのimport前に必要
+import os
+import sys
+sys.path.append(os.getcwd())
+
 from tools import bumpup
 import constants
 import zipfile
@@ -17,10 +21,6 @@ import json
 import hashlib
 import glob
 import datetime
-import os
-import sys
-sys.path.append(os.getcwd())
-
 
 class build:
     def __init__(self):
